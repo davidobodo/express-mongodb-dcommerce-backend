@@ -1,6 +1,7 @@
 const { uuid } = require("uuidv4");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
@@ -26,7 +27,6 @@ const signup = async (req, res, next) => {
         return next(new HttpError("Signing up failed, please try again", 500));
     }
     if (existingUser) {
-        console.log(existingUser, "existing user");
         return next(
             new HttpError("User exists already, please login instead", 422)
         );
@@ -54,12 +54,29 @@ const signup = async (req, res, next) => {
     //------------------------------------------------------------------------
     try {
         const result = await createdUser.save();
-        console.log(result, "result");
     } catch (err) {
         return next(new HttpError("Signing up failed, please try again", 500));
     }
 
-    res.status(201).json({ user: createdUser });
+    //------------------------------------------------------------------------
+    //Create token for user
+    //------------------------------------------------------------------------
+    let token;
+    try {
+        token = jwt.sign(
+            { userId: createdUser.id, email: createdUser.email },
+            "rukky_sample_secret_key",
+            { expiresIn: "1h" }
+        );
+    } catch (err) {
+        return next(new HttpError("Signing up failed, please try again", 500));
+    }
+
+    res.status(201).json({
+        userId: createdUser.id,
+        email: createdUser.email,
+        token: token,
+    });
 };
 
 exports.signup = signup;
