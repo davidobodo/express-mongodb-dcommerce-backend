@@ -1,0 +1,17 @@
+{
+  "name": "d-commerce-backend",
+  "version": "1.0.0",
+  "description": "Backend for d-commerce written in nodejs, express and mongo db",
+  "main": "index.js",
+  "author": "obodo david",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
