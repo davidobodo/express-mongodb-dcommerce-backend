@@ -7,7 +7,12 @@ const router = express.Router();
 router.post(
     "/signup",
     [
-        check("name").notEmpty().withMessage("name should not be empty"),
+        check("firstName")
+            .notEmpty()
+            .withMessage("First name should not be empty"),
+        check("lastName")
+            .notEmpty()
+            .withMessage("Last name should not be empty"),
         check("email")
             .normalizeEmail()
             .isEmail()
