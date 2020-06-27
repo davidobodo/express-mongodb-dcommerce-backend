@@ -59,7 +59,7 @@ const signup = async (req, res, next) => {
     }
 
     //------------------------------------------------------------------------
-    //Create token for user
+    //Create token for signed up user
     //------------------------------------------------------------------------
     let token;
     try {
@@ -79,4 +79,61 @@ const signup = async (req, res, next) => {
     });
 };
 
+const login = async (req, res, next) => {
+    const { email, password } = req.body;
+
+    //------------------------------------------------------------------------
+    //Check if a user with this email exists before loging in
+    //------------------------------------------------------------------------
+    let existingUser;
+    try {
+        existingUser = await User.findOne({ email: email });
+    } catch (err) {
+        return next(new HttpError("Signing up failed, please try again", 500));
+    }
+    if (!existingUser) {
+        return next(
+            new HttpError("Invalid credentials, could not log you in", 403)
+        );
+    }
+
+    //------------------------------------------------------------------------
+    //Check if a user with this password exists before loging in
+    //------------------------------------------------------------------------
+    let isValidPassword = false;
+    try {
+        isValidPassword = await bcrypt.compare(password, existingUser.password);
+    } catch (err) {
+        return next(
+            new HttpError("Invalid credentials, could not log you in", 403)
+        );
+    }
+    if (!isValidPassword) {
+        return next(
+            new HttpError("Invalid credentials, could not log you in", 403)
+        );
+    }
+
+    //------------------------------------------------------------------------
+    //Create token for logged in user
+    //------------------------------------------------------------------------
+    let token;
+    try {
+        token = jwt.sign(
+            { userId: existingUser.id, email: existingUser.email },
+            "rukky_sample_secret_key",
+            { expiresIn: "1h" }
+        );
+    } catch (err) {
+        return next(new HttpError("Signing up failed, please try again", 500));
+    }
+
+    res.json({
+        userId: existingUser.id,
+        email: existingUser.email,
+        token: token,
+    });
+};
+
 exports.signup = signup;
+exports.login = login;
