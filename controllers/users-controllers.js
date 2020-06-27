@@ -24,7 +24,12 @@ const signup = async (req, res, next) => {
     try {
         existingUser = await User.findOne({ email: email });
     } catch (err) {
-        return next(new HttpError("Signing up failed, please try again", 500));
+        return next(
+            new HttpError(
+                "Signing up failed (user exists), please try again",
+                500
+            )
+        );
     }
     if (existingUser) {
         return next(
@@ -39,7 +44,9 @@ const signup = async (req, res, next) => {
     try {
         hashedPassword = await bcrypt.hash(password, 12);
     } catch (err) {
-        return next(new HttpError("Signing up failed, please try again", 500));
+        return next(
+            new HttpError("Signing up failed (password), please try again", 500)
+        );
     }
 
     const createdUser = new User({
@@ -53,9 +60,11 @@ const signup = async (req, res, next) => {
     //Create user on database
     //------------------------------------------------------------------------
     try {
-        const result = await createdUser.save();
+        await createdUser.save();
     } catch (err) {
-        return next(new HttpError("Signing up failed, please try again", 500));
+        return next(
+            new HttpError("Signing up failed (database), please try again", 500)
+        );
     }
 
     //------------------------------------------------------------------------
@@ -65,11 +74,13 @@ const signup = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: createdUser.id, email: createdUser.email },
-            "rukky_sample_secret_key",
+            process.env.TOKEN_SECRET_KEY,
             { expiresIn: "1h" }
         );
     } catch (err) {
-        return next(new HttpError("Signing up failed, please try again", 500));
+        return next(
+            new HttpError("Signing up failed (token), please try again", 500)
+        );
     }
 
     res.status(201).json({
@@ -121,7 +132,7 @@ const login = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email },
-            "rukky_sample_secret_key",
+            process.env.TOKEN_SECRET_KEY,
             { expiresIn: "1h" }
         );
     } catch (err) {
