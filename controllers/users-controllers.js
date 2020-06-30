@@ -7,6 +7,7 @@ const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
 const signup = async (req, res, next) => {
+    console.log(req.body);
     const { firstName, lastName, email, password } = req.body;
 
     //------------------------------------------------------------------------
