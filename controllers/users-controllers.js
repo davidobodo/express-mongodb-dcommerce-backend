@@ -7,7 +7,6 @@ const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
 const signup = async (req, res, next) => {
-    console.log(req.body);
     const { firstName, lastName, email, password } = req.body;
 
     //------------------------------------------------------------------------
@@ -74,7 +73,11 @@ const signup = async (req, res, next) => {
     let token;
     try {
         token = jwt.sign(
-            { userId: createdUser.id, email: createdUser.email },
+            {
+                userId: createdUser.id,
+                email: createdUser.email,
+                firstName: createdUser.firstName,
+            },
             process.env.TOKEN_SECRET_KEY,
             { expiresIn: "1h" }
         );
@@ -87,6 +90,7 @@ const signup = async (req, res, next) => {
     res.status(201).json({
         userId: createdUser.id,
         email: createdUser.email,
+        firstName: createdUser.firstName,
         token: token,
     });
 };
