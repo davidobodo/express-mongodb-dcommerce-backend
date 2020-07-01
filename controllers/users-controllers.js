@@ -136,7 +136,11 @@ const login = async (req, res, next) => {
     let token;
     try {
         token = jwt.sign(
-            { userId: existingUser.id, email: existingUser.email },
+            {
+                userId: existingUser.id,
+                email: existingUser.email,
+                firstName: existingUser.firstName,
+            },
             process.env.TOKEN_SECRET_KEY,
             { expiresIn: "1h" }
         );
@@ -147,6 +151,7 @@ const login = async (req, res, next) => {
     res.json({
         userId: existingUser.id,
         email: existingUser.email,
+        firstName: existingUser.firstName,
         token: token,
     });
 };
