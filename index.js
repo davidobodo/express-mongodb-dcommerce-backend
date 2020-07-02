@@ -2,13 +2,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
+const isDevEnv = process.env.NODE_ENV !== "production";
 
 dotenv.config();
 const { PORT = 5000 } = process.env;
 const app = express();
+isDevEnv && app.use(cors({ origin: true }));
 
 app.use(bodyParser.json());
 
