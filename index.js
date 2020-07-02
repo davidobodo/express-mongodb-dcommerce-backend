@@ -7,6 +7,7 @@ const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
 
 dotenv.config();
+const { PORT = 5000 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
@@ -50,7 +51,7 @@ mongoose
         { useNewUrlParser: true }
     )
     .then(() => {
-        app.listen(5000, () => console.log("app running on localhost 5000"));
+        app.listen(PORT, () => console.log("app running on localhost 5000"));
     })
     .catch((err) => {
         console.log(err);
